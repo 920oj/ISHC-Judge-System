@@ -1,0 +1,10 @@
+{
+  "name": "ISHC-Judge-System-Backend",
+  "version": "1.0.0",
+  "main": "main.js",
+  "author": "920OJ",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
