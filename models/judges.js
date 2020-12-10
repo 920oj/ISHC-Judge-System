@@ -28,5 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'judges',
     underscored: true,
   });
+  judges.associate = models => {
+    judges.belongsTo(models.teams);
+  }
   return judges;
 };
