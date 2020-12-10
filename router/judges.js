@@ -3,12 +3,6 @@ const router = require("express").Router();
 
 // GET /judge これまでの判定結果を一覧で返す 
 router.get("/", async (req, res) => {
-  // const Teams = await models.teams.findAll();
-  // res.json(
-  //   Teams.map(team => {
-  //     return team.get({ plain: true });
-  //   })
-  // );
   const Judges = await models.judges.findAll();
   res.json(
     Judges.map(judge => {
@@ -17,6 +11,7 @@ router.get("/", async (req, res) => {
   )
 });
 
+// GET /judge/:id 任意のidの判定結果を返す
 router.get("/:id", async (req, res) => {
   const Judge = await models.judges.findAll({
     where: {
