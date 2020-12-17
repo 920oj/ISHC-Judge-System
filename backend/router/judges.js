@@ -45,4 +45,70 @@ router.get("/:id", async (req, res) => {
   }
 })
 
+router.get("/teams/:id", async (req, res) => {
+  try {
+    const teams = await models.judges.findAll({
+      where: {
+        team_id: req.params.id
+      }
+    });
+    if (teams[0]) {
+      res.json(
+        teams.map(judge => {
+          return judge.get({ plain: true });
+        })
+      )
+    }
+    else {
+      res.status(404);
+      res.json({
+        err: "Judge is not found."
+      });
+    }
+  }
+  catch {
+    res.status(500);
+    res.json({
+      err: "Internal Server Error."
+    })
+  }
+})
+
+router.get("/teams/:id/correct", async (req, res) => {
+  try {
+    const Judge = await models.judges.findAll({
+      where: {
+        team_id: req.params.id
+      }
+    });
+    if (Judge[0]) {
+      const judge_list = Judge.map(judge => {
+        return judge.get({ plain: true });
+      })
+      const correct_list = judge_list.filter(judge => {
+        return (judge.correct_flg === 1)
+      })
+
+      let correct_arr = [];
+      correct_list.forEach(item => {
+        correct_arr.push(item.question_id);
+      });
+      correct_arr = correct_arr.filter((x, i, self) => self.indexOf(x) === i);
+      res.json(correct_arr);
+    }
+    else {
+      res.status(404);
+      res.json({
+        err: "Judge is not found."
+      });
+    }
+  }
+  catch {
+    res.status(500);
+    res.json({
+      err: "Internal Server Error."
+    })
+  }
+})
+
 module.exports = router;

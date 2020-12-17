@@ -14,7 +14,7 @@ CREATE TABLE judges(
   id SERIAL NOT NULL,
   team_id INT NOT NULL,
   question_id INT NOT NULL,
-  answer TEXT NULL,
+  answer TEXT,
   correct_flg INT NOT NULL,
   score INT NOT NULL,
   language TEXT NOT NULL,
