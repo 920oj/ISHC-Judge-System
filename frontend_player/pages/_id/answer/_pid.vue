@@ -31,6 +31,18 @@
         </div>
       </div>
     </div>
+    <b-modal
+      id="confirm-modal"
+      hide-footer
+      no-close-on-esc
+      no-close-on-backdrop
+      hide-header-close
+    >
+      <template #modal-title> 採点中です... </template>
+      <div class="d-block text-center">
+        <h3>現在採点中です。<br />そのままでお待ち下さい。</h3>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -44,7 +56,7 @@ export default {
   },
   data() {
     return {
-      code: 'aaaaaaaaaaaaaaaaaaaaa',
+      code: '',
       theme: 'vs-dark',
       language: 'c',
       language_list: [
@@ -60,6 +72,18 @@ export default {
   computed: {
     backLink() {
       return `/${this.$route.params.id}/questions/`
+    },
+  },
+  methods: {
+    async submit() {
+      this.$bvModal.show('confirm-modal')
+      const body = {
+        team_id: this.$route.params.id,
+        answer: this.code,
+        language: this.language,
+      }
+      console.log(body)
+      // await this.$axios.$post()
     },
   },
   async asyncData({ app, params }) {
