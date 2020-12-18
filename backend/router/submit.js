@@ -63,6 +63,8 @@ router.post("/:id", async (req, res) => {
         break;
     }
 
+    console.log(ext)
+
     let answer_file_path = `/tmp/${team_id}_${question_id}_${language}_` + Date.now() + ext;
     const codes = values.answer.split("\n")
     let tmp = ""
@@ -72,6 +74,7 @@ router.post("/:id", async (req, res) => {
     // ファイルとしてコードの内容を書き出す
     try {
       fs.writeFileSync(answer_file_path, tmp, "utf8")
+      console.log("ファイル書き込み成功")
     } catch (e) {
       console.log(e)
     }
@@ -81,7 +84,7 @@ router.post("/:id", async (req, res) => {
 
     //ojコマンド標準出力受け取り
     const result = execSync(command, { timeout: 20000 });
-
+    console.log(result)
     //result=1ならWA, 0ならAC
     if (result == "1") {
       values.correct_flg = 0;
