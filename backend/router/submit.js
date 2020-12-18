@@ -1,6 +1,9 @@
 const models = require("../models")
 const router = require("express").Router();
-const execSync = require("child_process")
+const fs = require("fs");
+const os = require("os");
+const { execSync } = require("child_process");
+
 
 // POST /submit
 // Request Body:
@@ -24,22 +27,23 @@ router.post("/:id", async (req, res) => {
       answer: req.body.answer,
       correct_flg: 0,
       score: 0,
-      memory: null,
-      answer_time: null,
+      memory: 0,
+      answer_time: 0,
       language: req.body.language,
-      msg: "Wrong Answer!"
+      msg: "Wrong Answer!",
+      created_at: Date.now(),
+      updated_at: Date.now()
+
       //created_at, Updated_atはTimestamp
     }
 
-    console.log(values)
-
     //仮データをSQL登録
-    const init_judge = await Judge.create(values)
+    const init_judge = await models.judges.create(values)
     console.log(`仮登録judgeのid: ${init_judge.id}`); // これで仮judge_idとれないかな？
 
     //answerファイルにする
     let ext = "";
-    switch (value.language) {
+    switch (values.language) {
       case "c":
         ext = ".c";
         break;
@@ -63,9 +67,7 @@ router.post("/:id", async (req, res) => {
         break;
     }
 
-    console.log(ext)
-
-    let answer_file_path = `/tmp/${team_id}_${question_id}_${language}_` + Date.now() + ext;
+    let answer_file_path = `/tmp/${values.team_id}_${values.question_id}_${values.language}_` + Date.now() + ext;
     const codes = values.answer.split("\n")
     let tmp = ""
     codes.forEach(elem => {
@@ -76,15 +78,16 @@ router.post("/:id", async (req, res) => {
       fs.writeFileSync(answer_file_path, tmp, "utf8")
       console.log("ファイル書き込み成功")
     } catch (e) {
+      console.log("ファイル書き込み失敗！")
       console.log(e)
     }
 
-    let testcase = `/backend/problems/${question_id}/test`;
-    let command = `bash ojexec.sh ${language} ${answer_file_path} ${testcase}`;
+    let testcase = `/backend/problems/${values.question_id}/test`;
+    let command = `bash ojexec.sh ${values.language} ${answer_file_path} ${testcase}`;
 
     //ojコマンド標準出力受け取り
-    const result = execSync(command, { timeout: 20000 });
-    console.log(result)
+    let result = execSync(command, { timeout: 20000 });
+    result = Buffer.from(result).toString('utf-8')
     //result=1ならWA, 0ならAC
     if (result == "1") {
       values.correct_flg = 0;
@@ -103,7 +106,7 @@ router.post("/:id", async (req, res) => {
     }
 
     //SQL登録
-    await Judge.update(values, {
+    await models.judges.update(values, {
       where: {
         id: init_judge.id
       }

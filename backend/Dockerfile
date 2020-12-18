@@ -13,6 +13,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   npm \
   libboost-all-dev \
   curl \
+  time \
   wget \
   && add-apt-repository ppa:ondrej/php \
   && apt-get install php7.4 -y \
