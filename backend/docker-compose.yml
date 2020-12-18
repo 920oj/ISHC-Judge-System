@@ -13,8 +13,17 @@ services:
     hostname: postgres
     restart: always
     user: root
+    networks:
+      - ishcnet
   ubuntu:
     image: ishcapp
     build: ./
     ports:
       - "3001:3001"
+    networks:
+      - ishcnet
+    depends_on:
+      - db
+networks:
+  ishcnet:
+    driver: bridge
