@@ -68,7 +68,7 @@ router.post("/:id", async (req, res) => {
     }
 
     let answer_file_path = `/tmp/${values.team_id}_${values.question_id}_${values.language}_` + Date.now() + ext;
-    const codes = values.answer.split("\n")
+    const codes = values.answer.split("\r\n")
     let tmp = ""
     codes.forEach(elem => {
       tmp += elem + os.EOL

@@ -15,6 +15,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   curl \
   time \
   wget \
+  vim \
+  nano \
+  ruby \
   && add-apt-repository ppa:ondrej/php \
   && apt-get install php7.4 -y \
   && apt-get clean \
