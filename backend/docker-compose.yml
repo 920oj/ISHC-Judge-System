@@ -14,8 +14,7 @@ services:
     restart: always
     user: root
     networks:
-      ishcnet:
-        ipv4_address: 172.19.0.2
+      - ishcnet
            
   ubuntu:
     image: ishcapp
@@ -23,8 +22,7 @@ services:
     ports:
       - "3001:3001"
     networks:
-      ishcnet:
-        ipv4_address: 172.19.0.3
+      - ishcnet
     depends_on:
       - db
 networks:
