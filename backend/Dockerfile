@@ -31,4 +31,8 @@ EXPOSE 3001
 
 COPY ./ /backend/
 
+WORKDIR /backend
+
+RUN npm install
+
 CMD ["pm2", "--no-daemon", "start", "/backend/main.js"]
