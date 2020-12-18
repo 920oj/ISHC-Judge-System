@@ -24,12 +24,14 @@ router.post("/:id", async (req, res) => {
       answer: req.body.answer,
       correct_flg: 0,
       score: 0,
-      memory: "",
-      answer_time: "",
+      memory: null,
+      answer_time: null,
       language: req.body.language,
       msg: "Wrong Answer!"
       //created_at, Updated_atはTimestamp
     }
+
+    console.log(values)
 
     //仮データをSQL登録
     const init_judge = await Judge.create(values)
