@@ -94,6 +94,7 @@ router.get("/teams/:id/correct", async (req, res) => {
         correct_arr.push(item.question_id);
       });
       correct_arr = correct_arr.filter((x, i, self) => self.indexOf(x) === i);
+      correct_arr = correct_arr.sort((a, b) => a - b)
       res.json(correct_arr);
     }
     else {
