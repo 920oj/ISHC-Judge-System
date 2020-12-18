@@ -13,3 +13,8 @@ services:
     hostname: postgres
     restart: always
     user: root
+  ubuntu:
+    image: ishcapp
+    build: ./
+    ports:
+      - "3001:3001"

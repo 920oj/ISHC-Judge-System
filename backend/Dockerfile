@@ -8,10 +8,12 @@ ENV TZ=Asia/Tokyo
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
   software-properties-common \
   build-essential \
-  php \
   python3-pip \
   nodejs \
   npm \
+  libboost-all-dev \
+  curl \
+  wget \
   && add-apt-repository ppa:ondrej/php \
   && apt-get install php7.4 -y \
   && apt-get clean \
@@ -23,5 +25,10 @@ RUN npm install n -g && n stable
 
 RUN apt purge -y nodejs npm
 
-# どのディレクトリをどこにコピーするか　COPY /hoge /fuga みたいな
-# ここにnodeでmain.jsを起動させるコマンドを書く
+RUN npm install pm2 -g
+
+EXPOSE 3001
+
+COPY ./ /backend/
+
+CMD ["pm2", "--no-daemon", "start", "/backend/main.js"]
