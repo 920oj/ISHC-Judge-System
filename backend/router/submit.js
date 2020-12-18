@@ -2,12 +2,6 @@ const models = require("../models")
 const router = require("express").Router();
 const execSync = require("child_process")
 
-const commands = {
-  "python": `oj t -c "python3 {file}"`,
-  "node": `oj t -c "node {file}"`,
-  "c": `gcc {file} && oj t`,
-}
-
 // POST /submit
 // Request Body:
 // - team_id: チームID
@@ -20,29 +14,55 @@ const commands = {
 // ACの場合
 // {msg: "All Correct!", memory: "100kb", time: "300ms"}
 
-//残りのTodo
-// SQLにnullな状態で登録する(埋められるものを埋めて)→一度入れたanswer_idをupdateする
-// answerのファイル置く場所を決める( let global_path )
-// exexojのresultを正規表現を使って各種データを取得する(time,memory)
-// scoreのルールを元にscoreを計算、登録する
 
 router.post("/:id", async (req, res) => {
   try {
-    const question_id = req.params.id;
-    const team_id = req.body.team_id;
-    const answer = req.body.answer;
-    const language = req.body.language;
-    let msg;
-    let correct_flg;
-    let answer_time;
-    let memory;
-    let score;
+    const values = {
+      //judge_idはauto increment
+      team_id: req.body.team_id,
+      question_id: req.params.id,
+      answer: req.body.answer,
+      correct_flg: 0,
+      score: 0,
+      memory: "",
+      answer_time: "",
+      language: req.body.language,
+      msg: "Wrong Answer!"
+      //created_at, Updated_atはTimestamp
+    }
 
-    //判定処理
+    //仮データをSQL登録
+    const init_judge = await Judge.create(values)
+    console.log(`仮登録judgeのid: ${init_judge.id}`); // これで仮judge_idとれないかな？
+
     //answerファイルにする
-    let answer_file_path = `${global_path}/tmp/${team_id}_${question_id}_${language} ` + Date.now();
-    const codes = code.split("\n")
+    let ext = "";
+    switch (value.language) {
+      case "c":
+        ext = ".c";
+        break;
+      case "cpp":
+        ext = ".cpp";
+        break;
+      case "python":
+        ext = ".py";
+        break;
+      case "php":
+        ext = ".php";
+        break;
+      case "js":
+        ext = ".js";
+        break;
+      case "ruby":
+        ext = ".rb";
+        break;
+      case "sh":
+        ext = ".sh"
+        break;
+    }
 
+    let answer_file_path = `/tmp/${team_id}_${question_id}_${language}_` + Date.now() + ext;
+    const codes = values.answer.split("\n")
     let tmp = ""
     codes.forEach(elem => {
       tmp += elem + os.EOL
@@ -54,51 +74,44 @@ router.post("/:id", async (req, res) => {
       console.log(e)
     }
 
-
-    let global_path = ''; //環境変数 
-
-    let testcase = `${global_path}/backend/problems/${question_id}/test`;
-    let command = `ojexec.sh ${language} ${answer_file_path} ${testcase}`;
+    let testcase = `/backend/problems/${question_id}/test`;
+    let command = `bash ojexec.sh ${language} ${answer_file_path} ${testcase}`;
 
     //ojコマンド標準出力受け取り
+    const result = execSync(command, { timeout: 20000 });
 
-    const result = execSync(command);
-
-
-    if (!result) {
-      msg = "Wrong Answer!";
-      correct_flg = 0;
-      score = 0;
+    //result=1ならWA, 0ならAC
+    if (result == "1") {
+      values.correct_flg = 0;
+      values.score = 0;
+      values.msg = "Wrong Answer!";
     } else {
-      msg = "All Correct!"
-      correct_flg = 1;
-      let answer_time;
-      let memory;
-      let score;
+      let result_data = result.split("\n");
+
+      values.correct_flg = 1;
+      values.memory = result_data[1];
+      values.answer_time = result_data[0];
+      values.msg = "All Correct!"
+
+      values.score = 100;
+      //ここは問題番号で分岐
     }
-
-
-
 
     //SQL登録
-    const values = {
-      team_id: team_id,
-      question_id: question_id,
-      answer: answer,
-      correct_flg: correct_flg,
-      score: score,
-      language: language,
-      memory: memory,
-      answer_time: answer_time,
-      msg: msg
-    }
+    await Judge.update(values, {
+      where: {
+        id: init_judge.id
+      }
+    });
 
-    const judge = await Judges.create(values);
-
-    if (msg == "All Correct!") {
-      res.json({ msg: msg, memory: memory, time: answer_time })
+    if (values.msg == "All Correct!") {
+      res.json({
+        msg: values.msg,
+        memory: values.memory + " MB",
+        time: values.answer_time + " sec"
+      });
     } else {
-      res.json({ err: msg })
+      res.json({ err: values.msg })
     }
   } catch {
     res.status(500);

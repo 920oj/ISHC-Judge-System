@@ -20,8 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     correct_flg: DataTypes.INTEGER,
     score: DataTypes.INTEGER,
     language: DataTypes.STRING,
-    memory: DataTypes.STRING,
-    answer_time: DataTypes.INTEGER,
+    memory: DataTypes.DECIMAL,
+    answer_time: DataTypes.DECIMAL,
     msg: DataTypes.STRING
   }, {
     sequelize,

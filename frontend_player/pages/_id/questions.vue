@@ -15,11 +15,6 @@
         </b-col>
       </b-row>
     </b-container>
-    <!-- <div class="question-box" v-for="(item, i) in questions.contents" :key="i">
-      <b-card :header="item.level[0]" footer="未回答" :title="item.title">
-        <b-button href="">解答する</b-button>
-      </b-card>
-    </div> -->
   </div>
 </template>
 
