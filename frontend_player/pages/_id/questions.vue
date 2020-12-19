@@ -10,7 +10,9 @@
             :title="elem.title"
             style="margin: 16px 0 16px 0"
           >
-            <b-button href="">解答する</b-button>
+            <b-button :href="'/' + $route.params.id + '/answer/' + elem.id"
+              >解答する</b-button
+            >
           </b-card>
         </b-col>
       </b-row>
@@ -31,15 +33,18 @@ export default {
   },
   async asyncData({ app, params }) {
     const questions = await app.$axios.$get(
-      `https://ishc2020.microcms.io/api/v1/questions`,
+      `https://ishc2020.microcms.io/api/v1/questions?limit=16`,
       {
         headers: {
           'X-API-KEY': 'd4810716-5137-44cc-83a4-44f1bc6da121',
         },
       }
     )
-    console.log(questions)
-    return { questions }
+
+    const done_list = await app.$axios.$get(
+      `http://ishc-api.920oj.net/judge/teams/${params.id}/correct`
+    )
+    return { questions, done_list }
   },
 }
 

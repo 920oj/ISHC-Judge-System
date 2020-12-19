@@ -38,9 +38,30 @@
       no-close-on-backdrop
       hide-header-close
     >
-      <template #modal-title> 採点中です... </template>
-      <div class="d-block text-center">
+      <template #modal-title> {{ modalTitle }} </template>
+      <div class="d-block text-center" v-if="!submit_result.is_loaded">
         <h3>現在採点中です。<br />そのままでお待ち下さい。</h3>
+      </div>
+      <div
+        class="d-block text-center"
+        v-if="submit_result.is_loaded && submit_result.is_corrected"
+      >
+        <h3>正解です！</h3>
+        <p>点数が加算されます！</p>
+        <p>メモリ使用量: {{ submit_result.memory }}</p>
+        <p>処理時間: {{ submit_result.time }}</p>
+        <b-button :href="backLink">問題一覧に戻る</b-button>
+      </div>
+      <div
+        class="d-block text-center"
+        v-if="submit_result.is_loaded && !submit_result.is_corrected"
+      >
+        <h3>不正解です……</h3>
+        <p>もう一度リトライ！</p>
+        <b-button @click="closeModal()">閉じる</b-button>
+        <div class="text-left d-block" style="margin-top: 16px">
+          <a :href="backLink">問題一覧に戻る</a>
+        </div>
       </div>
     </b-modal>
   </div>
@@ -66,24 +87,67 @@ export default {
         { value: 'python', text: 'Python3' },
         { value: 'php', text: 'PHP' },
         { value: 'ruby', text: 'Ruby' },
+        { value: 'shell', text: 'ShellScript(bash)' },
       ],
+      submit_result: {
+        is_loaded: false,
+        is_corrected: null,
+        msg: '',
+        memory: '',
+        time: '',
+      },
     }
   },
   computed: {
     backLink() {
       return `/${this.$route.params.id}/questions/`
     },
+    modalTitle() {
+      return this.submit_result.is_loaded ? '結果' : '採点中です……'
+    },
   },
   methods: {
     async submit() {
       this.$bvModal.show('confirm-modal')
+      let submit_language = this.language
+      if (this.language == 'javascript') {
+        submit_language = 'js'
+      }
+      if (this.language == 'shell') {
+        submit_language = 'sh'
+      }
       const body = {
         team_id: this.$route.params.id,
         answer: this.code,
-        language: this.language,
+        language: submit_language,
       }
-      console.log(body)
-      // await this.$axios.$post()
+      const question_id = this.$route.params.pid.replace('q-', '')
+      const post_result = await this.$axios.$post(
+        `http://ishc-api.920oj.net/submit/${question_id}`,
+        body
+      )
+      if (post_result.msg) {
+        this.submit_result.is_loaded = true
+        this.submit_result.is_corrected = true
+        this.submit_result.msg = post_result.msg
+        this.submit_result.memory = post_result.memory
+        this.submit_result.time = post_result.time
+      }
+      if (post_result.err) {
+        this.submit_result.is_loaded = true
+        this.submit_result.is_corrected = false
+        this.submit_result.msg = post_result.err
+      }
+    },
+    closeModal() {
+      this.$bvModal.hide('confirm-modal')
+      this.submit_result = {
+        is_loaded: false,
+        is_corrected: null,
+        msg: '',
+        memory: '',
+        time: '',
+      }
     },
   },
   async asyncData({ app, params }) {
@@ -104,12 +168,14 @@ export default {
 .wrapper {
   display: flex;
   width: 100%;
-  overflow: hidden;
+  height: calc(100vh - 56px);
 }
 
 .questionarea-wrapper {
   flex: 1;
   padding: 16px;
+  height: calc(100vh - 56px);
+  overflow: scroll;
 }
 
 .editorarea-wrapper {

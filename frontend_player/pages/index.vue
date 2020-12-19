@@ -21,10 +21,10 @@ export default {
     return {
       selected: null,
       teams: [
-        { value: '1', text: '○○研究室' },
-        { value: '2', text: '□□研究室' },
-        { value: '3', text: '△△研究室' },
-        { value: '4', text: '××研究室' },
+        { value: '1', text: '大谷研究室' },
+        { value: '2', text: '岩野研究室' },
+        { value: '3', text: '宮地研究室' },
+        { value: '4', text: '市野研究室' },
       ],
     }
   },
