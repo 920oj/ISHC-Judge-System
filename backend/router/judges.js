@@ -60,8 +60,10 @@ router.get("/teams/:id", async (req, res) => {
       )
     }
     else {
-      res.status(200);
-      res.json([]);
+      res.status(404);
+      res.json({
+        err: "Judge is not found."
+      });
     }
   }
   catch {
@@ -96,10 +98,8 @@ router.get("/teams/:id/correct", async (req, res) => {
       res.json(correct_arr);
     }
     else {
-      res.status(404);
-      res.json({
-        err: "Judge is not found."
-      });
+      res.status(200);
+      res.json([]);
     }
   }
   catch {
