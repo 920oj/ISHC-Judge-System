@@ -3,7 +3,7 @@
 INSERT INTO teams(name, lab_name) VALUES
   ('大谷研究室', '大谷研究室'),
   ('岩野研究室', '岩野研究室'),
-  ('宮地研究室', '宮地研究室');
+  ('宮地研究室', '宮地研究室'),
   ('市野研究室', '市野研究室');
 
 INSERT INTO judges(team_id, question_id, answer, correct_flg, score, language, memory, answer_time, msg, created_at, updated_at) VALUES
