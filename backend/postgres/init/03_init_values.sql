@@ -1,10 +1,10 @@
 \c ishc
 
 INSERT INTO teams(id, name, lab_name) VALUES
-  (1, '大谷研究室', '大谷研究室'),
-  (2, '岩野研究室', '岩野研究室'),
-  (3, '宮地研究室', '宮地研究室');
-  (4, '宮地研究室', '宮地研究室');
+  ('1', '大谷研究室', '大谷研究室'),
+  ('2', '岩野研究室', '岩野研究室'),
+  ('3', '宮地研究室', '宮地研究室');
+  ('4', '宮地研究室', '宮地研究室');
 
 INSERT INTO judges(team_id, question_id, answer, correct_flg, score, language, memory, answer_time, msg, created_at, updated_at) VALUES
   ('2', '1', 'console.log(''hoge'')', 1, 300, 'JavaScript', 3.2, 1000, '', current_timestamp, current_timestamp),
