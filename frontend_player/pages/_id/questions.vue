@@ -6,7 +6,6 @@
         <b-col v-for="(elem, j) in item" :key="j">
           <b-card
             :header="elem.level[0]"
-            footer="未回答"
             :title="elem.title"
             style="margin: 16px 0 16px 0"
           >

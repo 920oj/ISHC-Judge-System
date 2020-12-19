@@ -98,6 +98,17 @@ export default {
       },
     }
   },
+  mounted() {
+    console.log('リダイレクト')
+    console.log(this.done_list)
+    console.log(this.$route.params.pid)
+    if (
+      this.done_list.includes(Number(this.$route.params.pid.replace('q-', '')))
+    ) {
+      alert('この問題は回答済みです。問題一覧ページにリダイレクトします。')
+      this.$router.push(`/${this.$route.params.id}/questions/`)
+    }
+  },
   computed: {
     backLink() {
       return `/${this.$route.params.id}/questions/`
@@ -159,7 +170,10 @@ export default {
         },
       }
     )
-    return { question }
+    const done_list = await app.$axios.$get(
+      `https://ishc-api.920oj.net/judge/teams/${params.id}/correct`
+    )
+    return { question, done_list }
   },
 }
 </script>
