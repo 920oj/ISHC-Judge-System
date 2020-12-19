@@ -42,7 +42,7 @@ export default {
     )
 
     const done_list = await app.$axios.$get(
-      `http://ishc-api.920oj.net/judge/teams/${params.id}/correct`
+      `https://ishc-api.920oj.net/judge/teams/${params.id}/correct`
     )
     return { questions, done_list }
   },

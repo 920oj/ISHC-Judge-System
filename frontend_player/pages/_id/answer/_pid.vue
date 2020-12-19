@@ -123,7 +123,7 @@ export default {
       }
       const question_id = this.$route.params.pid.replace('q-', '')
       const post_result = await this.$axios.$post(
-        `http://ishc-api.920oj.net/submit/${question_id}`,
+        `https://ishc-api.920oj.net/submit/${question_id}`,
         body
       )
       if (post_result.msg) {
