@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "root",
+    "password": "root",
+    "database": "ishc",
+    "host": "172.19.0.2",
+    "dialect": "postgresql"
+  }
+}
